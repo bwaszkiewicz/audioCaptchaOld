@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/textCaptcha"
+    android:layout_width="@android:dimen/thumbnail_height"
+    android:layout_height="@android:dimen/thumbnail_height"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textCaptchaHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="audioCaptcha"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/textCaptchaImage"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="1"
+        android:visibility="visible"
+        app:srcCompat="@android:color/holo_green_dark" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/textCaptchaInput"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Type code" />
+
+        <Button
+            android:id="@+id/textCaptchaSubmit"
+            android:layout_width="@android:dimen/app_icon_size"
+            android:layout_height="@android:dimen/app_icon_size"
+            android:background="@android:drawable/checkbox_on_background" />
+
+        <Button
+            android:id="@+id/textCaptchaRefresh"
+            android:layout_width="@android:dimen/app_icon_size"
+            android:layout_height="@android:dimen/app_icon_size"
+            android:background="@android:drawable/ic_menu_rotate" />
+    </LinearLayout>
+</LinearLayout>

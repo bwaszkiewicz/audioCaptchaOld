@@ -18,7 +18,7 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
     private Button submitButton;
     private Button refreshButton;
 
-    private static final String TAG = AudioCaptchaViewControllerImpl.class.getName();
+    private static final String TAG = TextCaptchaViewControllerImpl.class.getName();
 
     public TextCaptchaViewControllerImpl(View layout){
         this.captchaLayout = layout;

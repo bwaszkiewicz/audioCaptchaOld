@@ -9,6 +9,8 @@
         android:id="@+id/audioCaptchaHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:padding="2dp"
         android:text="audioCaptcha" />
 
     <LinearLayout
@@ -26,17 +28,25 @@
             android:inputType="textPersonName" />
 
         <Button
-            android:id="@+id/audioCaptchaSubmit"
-            android:layout_width="@android:dimen/app_icon_size"
-            android:layout_height="@android:dimen/app_icon_size"
+            android:id="@+id/audioCaptchaPlay"
+            android:layout_width="@dimen/ic_size"
+            android:layout_height="@dimen/ic_size"
             android:layout_weight="1"
-            android:background="@android:drawable/ic_media_play" />
+            android:background="@drawable/ic_play" />
+
+
+        <Button
+            android:id="@+id/audioCaptchaSubmit"
+            android:layout_width="@dimen/ic_size"
+            android:layout_height="@dimen/ic_size"
+            android:layout_weight="1"
+            android:background="@drawable/ic_check" />
 
         <Button
             android:id="@+id/audioCaptchaRefresh"
-            android:layout_width="@android:dimen/app_icon_size"
-            android:layout_height="@android:dimen/app_icon_size"
+            android:layout_width="@dimen/ic_size"
+            android:layout_height="@dimen/ic_size"
             android:layout_weight="1"
-            android:background="@android:drawable/ic_menu_rotate" />
+            android:background="@drawable/ic_replay" />
     </LinearLayout>
 </LinearLayout>

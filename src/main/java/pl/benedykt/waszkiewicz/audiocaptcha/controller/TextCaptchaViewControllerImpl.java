@@ -58,6 +58,11 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
     }
 
     @Override
+    public void play() {
+
+    }
+
+    @Override
     public Boolean submit() {
         return null;
     }

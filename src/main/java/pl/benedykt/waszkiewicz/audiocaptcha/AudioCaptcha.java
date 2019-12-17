@@ -26,6 +26,10 @@ public class AudioCaptcha {
         audio,
         text
     }
+
+    public Boolean getResult(){
+        return viewController.isChacked();
+    }
 }
 
 

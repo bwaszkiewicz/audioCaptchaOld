@@ -3,8 +3,6 @@ package pl.benedykt.waszkiewicz.audiocaptcha.controller;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import java.util.Locale;
 
-import pl.benedykt.waszkiewicz.audiocaptcha.audio.CodeGenerator;
+import pl.benedykt.waszkiewicz.audiocaptcha.CodeGenerator;
 import pl.benedykt.waszkiewicz.audiocaptcha.R;
 
 public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements ViewController {
@@ -32,11 +30,12 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
     private CodeGenerator codeGenerator;
     private MediaPlayer player;
 
+    private String code;
     private Boolean isChecked = false;
     private volatile Boolean isVoice = false;
     private volatile Boolean isStopVoice = false;
 
-    private String code;
+
 
     private Thread speakThread;
 
@@ -50,7 +49,6 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
         this.refreshButton = captchaLayout.findViewById(R.id.audioCaptchaRefresh);
         this.codeGenerator = CodeGenerator.getInstance();
         code = codeGenerator.getSequence();
-        Log.println(Log.ERROR, TAG, "code:" + code);
     }
 
     @Override
@@ -105,6 +103,11 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
     }
 
     @Override
+    public Boolean submitCheck() {
+        return isChecked;
+    }
+
+    @Override
     public void play() {
         if (!isVoice)
             speak();
@@ -115,10 +118,10 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
     @Override
     public Boolean submit() {
         String test = code.replaceAll("\\s+", "");
-        Log.println(Log.ERROR, TAG, "code: '" + test + "'");
         if (test.equals(inputEditText.getText().toString())) {
             Toast.makeText(captchaLayout.getContext(), "you got them right", Toast.LENGTH_SHORT).show();
             captchaLayout.setVisibility(captchaLayout.GONE);
+            isChecked = true;
             return true;
         } else {
             Toast.makeText(captchaLayout.getContext(), "You missed", Toast.LENGTH_SHORT).show();
@@ -143,6 +146,10 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
         super.onDestroy();
     }
 
+    @Override
+    public Boolean isChacked() {
+        return isChecked;
+    }
 
     private void speak() {
 

@@ -1,14 +1,30 @@
 package pl.benedykt.waszkiewicz.audiocaptcha.controller;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.security.SecureRandom;
+import java.util.Random;
+
+import pl.benedykt.waszkiewicz.audiocaptcha.CodeGenerator;
 import pl.benedykt.waszkiewicz.audiocaptcha.R;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.BackgroundProducer;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.factory.BackgroundType;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.FlatColorBackgroundProducer;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.producer.DefaultTextImgProducer;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.producer.TextImgProducer;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.producer.factory.TextImgType;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.renderer.CaptchaRenderer;
 
 public class TextCaptchaViewControllerImpl extends AppCompatActivity implements ViewController {
 
@@ -18,6 +34,12 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
     private Button submitButton;
     private Button refreshButton;
 
+    private CodeGenerator codeGenerator;
+    private static final Random RAND = new SecureRandom();
+
+    private String code;
+    private Boolean isChecked = false;
+
     private static final String TAG = TextCaptchaViewControllerImpl.class.getName();
 
     public TextCaptchaViewControllerImpl(View layout){
@@ -26,6 +48,9 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
         inputEditText = captchaLayout.findViewById(R.id.textCaptchaInput);
         submitButton = captchaLayout.findViewById(R.id.textCaptchaSubmit);
         refreshButton = captchaLayout.findViewById(R.id.textCaptchaRefresh);
+        this.codeGenerator = CodeGenerator.getInstance();
+        code = codeGenerator.getSequence();
+        draw();
     }
 
     @Override
@@ -42,7 +67,7 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO submit handle
+                submit();
                 Log.println(Log.DEBUG,TAG, "submitButton");
             }
         });
@@ -50,11 +75,16 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO refresh handle
-                Log.println(Log.DEBUG,TAG, "refreshButton");
+                refresh();
+//                Log.println(Log.DEBUG,TAG, "refreshButton");
             }
         });
 
+    }
+
+    @Override
+    public Boolean submitCheck() {
+        return isChecked;
     }
 
     @Override
@@ -64,11 +94,46 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
 
     @Override
     public Boolean submit() {
-        return null;
+        String test = code.replaceAll("\\s+", "");
+        Log.println(Log.ERROR, TAG, "code: '" + test + "'");
+       // closeKeyboard();
+        if (test.equals(inputEditText.getText().toString())) {
+            Toast.makeText(captchaLayout.getContext(), "you got them right", Toast.LENGTH_SHORT).show();
+            captchaLayout.setVisibility(captchaLayout.GONE);
+            isChecked = true;
+            return true;
+        } else {
+            Toast.makeText(captchaLayout.getContext(), "You missed", Toast.LENGTH_SHORT).show();
+            return false;
+        }
     }
 
     @Override
     public void refresh() {
+        code = codeGenerator.getSequence();
+        draw();
+    }
 
+    @Override
+    public Boolean isChacked() {
+        return isChecked;
+    }
+
+    private void draw(){
+
+        BackgroundProducer backgroundProducer = new FlatColorBackgroundProducer();
+        TextImgProducer textImgProducer = new DefaultTextImgProducer();
+
+
+        View v = new CaptchaRenderer(imageView.getContext(), 200, 60, BackgroundType.FLAT, drawTextImageType(), code);
+        Bitmap bitmap = Bitmap.createBitmap(200,60, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        v.draw(canvas);
+        imageView.setImageBitmap(bitmap);
+    }
+
+
+    private TextImgType drawTextImageType(){
+        return TextImgType.values()[RAND.nextInt(TextImgType.values().length)];
     }
 }

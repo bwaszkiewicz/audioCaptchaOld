@@ -1,4 +1,4 @@
-package pl.benedykt.waszkiewicz.audiocaptcha.audio;
+package pl.benedykt.waszkiewicz.audiocaptcha;
 
 import java.security.SecureRandom;
 import java.util.Random;

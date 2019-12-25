@@ -1,7 +1,5 @@
 package pl.benedykt.waszkiewicz.audiocaptcha;
 
-import android.widget.Button;
-
 public class Configuration {
 
     private static Configuration instance;
@@ -23,24 +21,47 @@ public class Configuration {
         return new Builder();
     }
 
-    private Double minBackgroundTextColorContrastRatio = 4.0;
-    private Boolean generateLetters = false;
+    private Double minColorContrastRatio = 4.0;
+    private Double maxColorContrastRatio = 20.0;
+    private Integer codeLength = 4;
+    private Boolean generateLowerCases = false;
+    private Boolean generateUpperCases = false;
     private Boolean generateNumbers = true;
-    private Boolean caseSensitive = false;
+    private Boolean useBlurTextFilter = true;
+    private Boolean useDashTextFilter = true;
+    private Boolean useDefaultTextFilter = false;
+    private Boolean useHollowTextFilter = true;
+    private Boolean useTriangleTextFilter = true;
+
 
 
     public static final class Builder{
-        private Double minBackgroundTextColorContrastRatio;
-        private Boolean generateLetters;
-        private Boolean generateNumbers;
 
-        public Builder minBackgroundTextColorContrastRatio(Double minContrastRatio){
-            this.minBackgroundTextColorContrastRatio = minContrastRatio;
+        private Double minColorContrastRatio = 4.0;
+        private Double maxColorContrastRatio = 6.0;
+        private Integer codeLength = 4;
+        private Boolean generateLowerCases = false;
+        private Boolean generateUpperCases = false;
+        private Boolean generateNumbers = true;
+        private Boolean useBlurTextFilter = true;
+        private Boolean useDashTextFilter = true;
+        private Boolean useDefaultTextFilter = false;
+        private Boolean useHollowTextFilter = true;
+        private Boolean useTriangleTextFilter = true;
+
+
+        public Builder minColorContrastRatio(Double minColorContrastRatio){
+            this.minColorContrastRatio = minColorContrastRatio;
             return this;
         }
 
-        public Builder generateLetters(Boolean generateLetters){
-            this.generateLetters = generateLetters;
+        public Builder maxColorContrastRation (Double maxColorContrastRatio){
+            this.maxColorContrastRatio = maxColorContrastRatio;
+            return this;
+        }
+
+        public Builder generateLowerCases(Boolean generateLowerCases){
+            this.generateLowerCases = generateLowerCases;
             return this;
         }
 
@@ -49,6 +70,100 @@ public class Configuration {
             return this;
         }
 
+        public Builder generateUpperCases(Boolean generateUpperCases) {
+            this.generateUpperCases = generateUpperCases;
+            return this;
+        }
+
+        public Builder codeLength(Integer codeLength) {
+            this.codeLength = codeLength;
+            return this;
+        }
+
+        public Builder useBlurTextFilter(Boolean useBlurTextFilter){
+            this.useBlurTextFilter = useBlurTextFilter;
+            return this;
+        }
+
+        public Builder useDashTextFilter(Boolean useDashTextFilter){
+            this.useDashTextFilter = useDashTextFilter;
+            return this;
+        }
+
+        public Builder useDefaultTextFilter(Boolean useDefaultTextFilter){
+            this.useDefaultTextFilter = useDefaultTextFilter;
+            return this;
+        }
+
+        public Builder useHollowTextFilter(Boolean useHollowTextFilter){
+            this.useHollowTextFilter = useHollowTextFilter;
+            return this;
+        }
+
+        public Builder useTriangleTextFilter(Boolean useTriangleTextFilter){
+            this.useTriangleTextFilter = useTriangleTextFilter;
+            return this;
+        }
+
+        public Configuration build(){
+            Configuration configuration = getInstance();
+            configuration.generateUpperCases = this.generateUpperCases;
+            configuration.generateLowerCases = this.generateLowerCases;
+            configuration.generateNumbers = this.generateNumbers;
+            configuration.minColorContrastRatio = this.minColorContrastRatio;
+            configuration.maxColorContrastRatio = this.maxColorContrastRatio;
+            configuration.codeLength = this.codeLength;
+            configuration.useBlurTextFilter = this.useBlurTextFilter;
+            configuration.useDashTextFilter = this.useDashTextFilter;
+            configuration.useDefaultTextFilter = this.useDefaultTextFilter;
+            configuration.useHollowTextFilter = this.useHollowTextFilter;
+            configuration.useTriangleTextFilter = this.useTriangleTextFilter;
+            return configuration;
+        }
     }
 
+
+    public Boolean getGenerateUpperCases() {
+        return generateUpperCases;
+    }
+
+    public Boolean getGenerateLowerCases() {
+        return generateLowerCases;
+    }
+
+    public Boolean getGenerateNumbers() {
+        return generateNumbers;
+    }
+
+    public Double getMinColorContrastRatio() {
+        return minColorContrastRatio;
+    }
+
+    public Double getMaxColorContrastRatio() {
+        return maxColorContrastRatio;
+    }
+
+    public Integer getCodeLength() {
+        return codeLength;
+    }
+
+    public Boolean getUseBlurTextFilter() {
+        return useBlurTextFilter;
+    }
+
+    public Boolean getUseDashTextFilter() {
+        return useDashTextFilter;
+    }
+
+    public Boolean getUseDefaultTextFilter() {
+        return useDefaultTextFilter;
+    }
+
+    public Boolean getUseHollowTextFilter() {
+        return useHollowTextFilter;
+    }
+
+    public Boolean getUseTriangleTextFilter() {
+        return useTriangleTextFilter;
+    }
 }

@@ -1,10 +1,8 @@
 package pl.benedykt.waszkiewicz.audiocaptcha.controller;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,9 +12,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-import pl.benedykt.waszkiewicz.audiocaptcha.CodeGenerator;
+import pl.benedykt.waszkiewicz.audiocaptcha.Configuration;
+import pl.benedykt.waszkiewicz.audiocaptcha.generator.CodeGenerator;
 import pl.benedykt.waszkiewicz.audiocaptcha.R;
 import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.BackgroundProducer;
 import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.factory.BackgroundType;
@@ -36,6 +37,7 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
 
     private CodeGenerator codeGenerator;
     private static final Random RAND = new SecureRandom();
+    private Configuration configuration;
 
     private String code;
     private Boolean isChecked = false;
@@ -48,7 +50,9 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
         inputEditText = captchaLayout.findViewById(R.id.textCaptchaInput);
         submitButton = captchaLayout.findViewById(R.id.textCaptchaSubmit);
         refreshButton = captchaLayout.findViewById(R.id.textCaptchaRefresh);
+
         this.codeGenerator = CodeGenerator.getInstance();
+        this.configuration = Configuration.getInstance();
         code = codeGenerator.getSequence();
         draw();
     }
@@ -134,6 +138,15 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
 
 
     private TextImgType drawTextImageType(){
-        return TextImgType.values()[RAND.nextInt(TextImgType.values().length)];
+
+        List<TextImgType> textImgTypes = new ArrayList<>();
+
+        if(configuration.getUseBlurTextFilter()) textImgTypes.add(TextImgType.BLUR);
+        if(configuration.getUseDashTextFilter()) textImgTypes.add(TextImgType.DASH);
+        if(configuration.getUseDefaultTextFilter()) textImgTypes.add(TextImgType.DEFAULT);
+        if(configuration.getUseHollowTextFilter()) textImgTypes.add(TextImgType.HOLLOW);
+        if(configuration.getUseTriangleTextFilter()) textImgTypes.add(TextImgType.TRIANGLE);
+
+        return textImgTypes.get(RAND.nextInt(textImgTypes.size()));
     }
 }

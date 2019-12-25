@@ -1,10 +1,11 @@
-package pl.benedykt.waszkiewicz.audiocaptcha;
+package pl.benedykt.waszkiewicz.audiocaptcha.generator;
 
 import android.graphics.Color;
-import android.util.Log;
 
 import java.security.SecureRandom;
 import java.util.Random;
+
+import pl.benedykt.waszkiewicz.audiocaptcha.Configuration;
 
 public class ColorGenerator {
 
@@ -12,11 +13,13 @@ public class ColorGenerator {
     private static final String TAG = ColorGenerator.class.getName();
 
     private static ColorGenerator instance;
+    private Configuration configuration;
 
     private int bacgroundColor;
     private int textColor;
 
     private ColorGenerator(){
+        configuration = Configuration.getInstance();
         if (instance != null) {
             throw new IllegalStateException("Cannot create new instance, please use getInstance method instead.");
         }
@@ -38,7 +41,7 @@ public class ColorGenerator {
             textColor = Color.argb(255,RAND.nextInt(255),RAND.nextInt(255),RAND.nextInt(255));
             contrastRatio = checkContrastRatio(bacgroundColor, textColor);
 
-        } while (contrastRatio < 4);
+        } while (contrastRatio < configuration.getMinColorContrastRatio() && contrastRatio > configuration.getMaxColorContrastRatio());
 
 //        Log.println(Log.DEBUG,TAG, "Bacground: R="+ ((bacgroundColor >> 16) & 0xff) +" G=" + ((bacgroundColor >> 8) & 0xff) + " B="+(bacgroundColor & 0xff));
 //        Log.println(Log.DEBUG,TAG, "Text: R="+ ((textColor >> 16) & 0xff) +" G=" + ((textColor >> 8) & 0xff) + " B="+(textColor & 0xff));

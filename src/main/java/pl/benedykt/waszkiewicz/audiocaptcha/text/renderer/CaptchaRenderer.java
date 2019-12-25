@@ -2,10 +2,9 @@ package pl.benedykt.waszkiewicz.audiocaptcha.text.renderer;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.view.View;
 
-import pl.benedykt.waszkiewicz.audiocaptcha.ColorGenerator;
+import pl.benedykt.waszkiewicz.audiocaptcha.generator.ColorGenerator;
 import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.BackgroundProducer;
 import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.factory.BackgroundType;
 import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.factory.BackgroundFactory;

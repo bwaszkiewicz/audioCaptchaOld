@@ -16,7 +16,7 @@ public class DashTextImgProducer implements TextImgProducer {
 
     @Override
     public Canvas getText(int width, int height, String text, Canvas canvas, int textColor) {
-        float strokeWidth = 1.5f;
+        float strokeWidth = 2.0f;
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         PathEffect dash = new DashPathEffect(new float[] { strokeWidth * 3, strokeWidth }, 0);
         paint.setStyle(Paint.Style.STROKE);

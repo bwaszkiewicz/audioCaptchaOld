@@ -8,14 +8,14 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textCaptchaHeader"
+        android:id="@+id/tv_captcha_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="audioCaptcha"
         tools:visibility="visible" />
 
     <ImageView
-        android:id="@+id/textCaptchaImage"
+        android:id="@+id/img_captcha"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:visibility="visible"
@@ -27,7 +27,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/textCaptchaInput"
+            android:id="@+id/et_captcha_input"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -35,7 +35,7 @@
             android:inputType="textPersonName" />
 
         <Button
-            android:id="@+id/audioCaptchaPlay"
+            android:id="@+id/btn_play"
             android:layout_width="@dimen/ic_size"
             android:layout_height="@dimen/ic_size"
             android:layout_weight="1"
@@ -43,14 +43,14 @@
 
 
         <Button
-            android:id="@+id/audioCaptchaSubmit"
+            android:id="@+id/btn_submit"
             android:layout_width="@dimen/ic_size"
             android:layout_height="@dimen/ic_size"
             android:layout_weight="1"
             android:background="@drawable/ic_check" />
 
         <Button
-            android:id="@+id/audioCaptchaRefresh"
+            android:id="@+id/btn_refresh"
             android:layout_width="@dimen/ic_size"
             android:layout_height="@dimen/ic_size"
             android:layout_weight="1"

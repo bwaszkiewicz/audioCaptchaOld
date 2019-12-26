@@ -3,6 +3,7 @@ package pl.benedykt.waszkiewicz.audiocaptcha;
 import android.view.View;
 
 import pl.benedykt.waszkiewicz.audiocaptcha.controller.AudioCaptchaViewControllerImpl;
+import pl.benedykt.waszkiewicz.audiocaptcha.controller.CaptchaViewController;
 import pl.benedykt.waszkiewicz.audiocaptcha.controller.TextCaptchaViewControllerImpl;
 import pl.benedykt.waszkiewicz.audiocaptcha.controller.ViewController;
 
@@ -18,17 +19,21 @@ public class AudioCaptcha {
             case text:
                 this.viewController = new TextCaptchaViewControllerImpl(captchaLayout);
                 break;
+            case mix:
+                this.viewController = new CaptchaViewController(captchaLayout);
+                break;
         }
         viewController.init();
     }
 
     public enum Version{
         audio,
-        text
+        text,
+        mix
     }
 
     public Boolean getResult(){
-        return viewController.isChacked();
+        return viewController.isChecked();
     }
 }
 

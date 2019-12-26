@@ -1,19 +1,21 @@
 package pl.benedykt.waszkiewicz.audiocaptcha.controller;
 
 import android.content.Context;
-import android.media.AudioAttributes;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.audiofx.DynamicsProcessing;
 import android.media.audiofx.PresetReverb;
-import android.media.effect.Effect;
 import android.net.Uri;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,44 +24,57 @@ import androidx.core.content.ContextCompat;
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import pl.benedykt.waszkiewicz.audiocaptcha.Configuration;
+import pl.benedykt.waszkiewicz.audiocaptcha.R;
 import pl.benedykt.waszkiewicz.audiocaptcha.audio.EffectsManager;
 import pl.benedykt.waszkiewicz.audiocaptcha.generator.CodeGenerator;
-import pl.benedykt.waszkiewicz.audiocaptcha.R;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.backgrounds.factory.BackgroundType;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.producer.factory.TextImgType;
+import pl.benedykt.waszkiewicz.audiocaptcha.text.renderer.CaptchaRenderer;
 
-public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements ViewController {
+public class CaptchaViewController extends AppCompatActivity implements ViewController {
+
 
     private View captchaLayout;
+    private ImageView imageView;
     private EditText inputEditText;
     private Button submitButton;
-    private Button playButton;
     private Button refreshButton;
+    private Button playButton;
 
-    private TextToSpeech mTextToSpeech;
     private CodeGenerator codeGenerator;
+    private static final Random RAND = new SecureRandom();
+    private Configuration configuration;
     private MediaPlayer player;
+    private TextToSpeech mTextToSpeech;
 
     private String code;
     private Boolean isChecked = false;
+
+
+    private Thread speakThread;
     private volatile Boolean isVoice = false;
     private volatile Boolean isStopVoice = false;
 
-    private static final Random RAND = new SecureRandom();
+    private static final String TAG = TextCaptchaViewControllerImpl.class.getName();
 
-    private Thread speakThread;
-
-    private static final String TAG = AudioCaptchaViewControllerImpl.class.getName();
-
-    public AudioCaptchaViewControllerImpl(View layout) {
+    public CaptchaViewController(View layout){
         this.captchaLayout = layout;
-        this.inputEditText = captchaLayout.findViewById(R.id.audioCaptchaInput);
-        this.submitButton = captchaLayout.findViewById(R.id.audioCaptchaSubmit);
-        this.playButton = captchaLayout.findViewById(R.id.audioCaptchaPlay);
-        this.refreshButton = captchaLayout.findViewById(R.id.audioCaptchaRefresh);
+        this.imageView = captchaLayout.findViewById(R.id.img_captcha);
+        this.inputEditText = captchaLayout.findViewById(R.id.et_captcha_input);
+        this.submitButton = captchaLayout.findViewById(R.id.btn_submit);
+        this.refreshButton = captchaLayout.findViewById(R.id.btn_refresh);
+        this.playButton = captchaLayout.findViewById(R.id.btn_play);
+
         this.codeGenerator = CodeGenerator.getInstance();
+        this.configuration = Configuration.getInstance();
         code = codeGenerator.getSequence();
+        draw();
     }
 
     @Override
@@ -80,40 +95,38 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
             }
         });
 
+        if(useOnlyNumbers()) inputEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        if(useOnlyUpperCase())inputEditText.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submit();
+            }
+        });
+
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refresh();
+            }
+        });
+
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 play();
             }
         });
-
-        inputEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO input code handle
-                Log.println(Log.DEBUG, TAG, "inputEditText");
-            }
-        });
-
-
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                refresh();
-                Log.println(Log.DEBUG, TAG, "refreshButton");
-            }
-        });
-
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isChecked = submit();
-                Log.println(Log.DEBUG, TAG, "submitButton");
-            }
-        });
     }
 
-//    @Override
+    @Override
+    public Boolean isChecked() {
+        return isChecked;
+    }
+
     public void play() {
         if (!isVoice)
             speak();
@@ -121,40 +134,43 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
             stop();
     }
 
-//    @Override
-    public Boolean submit() {
+    public void submit() {
         String test = code.replaceAll("\\s+", "");
+        Log.println(Log.ERROR, TAG, "code: '" + test + "'");
+        // closeKeyboard();
         if (test.equals(inputEditText.getText().toString())) {
             Toast.makeText(captchaLayout.getContext(), "Correct", Toast.LENGTH_SHORT).show();
             captchaLayout.setVisibility(captchaLayout.GONE);
             isChecked = true;
-            return true;
         } else {
             Toast.makeText(captchaLayout.getContext(), "You missed", Toast.LENGTH_SHORT).show();
-            return false;
         }
     }
 
-//    @Override
     public void refresh() {
         code = codeGenerator.getSequence();
-        speak();
+        draw();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (mTextToSpeech != null) {
-            mTextToSpeech.stop();
-            mTextToSpeech.shutdown();
-        }
-        if (player != null)
-            player.release();
-        super.onDestroy();
+    private void draw(){
+        View v = new CaptchaRenderer(imageView.getContext(), 200, 60, BackgroundType.FLAT, drawTextImageType(), code);
+        Bitmap bitmap = Bitmap.createBitmap(200,60, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        v.draw(canvas);
+        imageView.setImageBitmap(bitmap);
     }
 
-    @Override
-    public Boolean isChecked() {
-        return isChecked;
+    private TextImgType drawTextImageType(){
+
+        List<TextImgType> textImgTypes = new ArrayList<>();
+
+        if(configuration.getUseBlurTextFilter()) textImgTypes.add(TextImgType.BLUR);
+        if(configuration.getUseDashTextFilter()) textImgTypes.add(TextImgType.DASH);
+        if(configuration.getUseDefaultTextFilter()) textImgTypes.add(TextImgType.DEFAULT);
+        if(configuration.getUseHollowTextFilter()) textImgTypes.add(TextImgType.HOLLOW);
+        if(configuration.getUseTriangleTextFilter()) textImgTypes.add(TextImgType.TRIANGLE);
+
+        return textImgTypes.get(RAND.nextInt(textImgTypes.size()));
     }
 
     private void speak() {
@@ -174,7 +190,6 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
             public void onDone(String utteranceId) {
 
                 if (player == null) {
-                    //player = MediaPlayer.create(captchaLayout.getContext(), R.raw.radio_tuning);
                     player = MediaPlayer.create(captchaLayout.getContext(), Uri.parse(utteranceId));
                 }
 
@@ -251,6 +266,13 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
 
     }
 
+    private void stop() {
+        if (speakThread.isAlive()) {
+            isStopVoice = true;
+            playButton.setBackground(ContextCompat.getDrawable(captchaLayout.getContext(), R.drawable.ic_play));
+        }
+    }
+
     private void checkAudio() {
         AudioManager audio = (AudioManager) captchaLayout.getContext().getSystemService(Context.AUDIO_SERVICE);
 
@@ -261,13 +283,6 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
             case 1:
                 Toast.makeText(captchaLayout.getContext(), "You have very low volume.", Toast.LENGTH_SHORT).show();
                 break;
-        }
-    }
-
-    private void stop() {
-        if (speakThread.isAlive()) {
-            isStopVoice = true;
-            playButton.setBackground(ContextCompat.getDrawable(captchaLayout.getContext(), R.drawable.ic_play));
         }
     }
 
@@ -298,5 +313,13 @@ public class AudioCaptchaViewControllerImpl extends AppCompatActivity implements
         mTextToSpeech.setPitch(0.9f);
         mTextToSpeech.setSpeechRate(0.3f);
         mTextToSpeech.synthesizeToFile(noiseText,null, outputFile, uri.toString());
+    }
+
+    private Boolean useOnlyNumbers(){
+        return !configuration.getGenerateLowerCases() && !configuration.getGenerateUpperCases() && configuration.getGenerateNumbers();
+    }
+
+    private Boolean useOnlyUpperCase(){
+        return !configuration.getGenerateLowerCases() && !configuration.getGenerateUpperCases();
     }
 }

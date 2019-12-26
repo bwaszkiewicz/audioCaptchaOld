@@ -86,23 +86,18 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
 
     }
 
-    @Override
-    public Boolean submitCheck() {
-        return isChecked;
-    }
-
-    @Override
+//    @Override
     public void play() {
 
     }
 
-    @Override
+//    @Override
     public Boolean submit() {
         String test = code.replaceAll("\\s+", "");
         Log.println(Log.ERROR, TAG, "code: '" + test + "'");
        // closeKeyboard();
         if (test.equals(inputEditText.getText().toString())) {
-            Toast.makeText(captchaLayout.getContext(), "you got them right", Toast.LENGTH_SHORT).show();
+            Toast.makeText(captchaLayout.getContext(), "Correct", Toast.LENGTH_SHORT).show();
             captchaLayout.setVisibility(captchaLayout.GONE);
             isChecked = true;
             return true;
@@ -112,22 +107,18 @@ public class TextCaptchaViewControllerImpl extends AppCompatActivity implements 
         }
     }
 
-    @Override
+//    @Override
     public void refresh() {
         code = codeGenerator.getSequence();
         draw();
     }
 
     @Override
-    public Boolean isChacked() {
+    public Boolean isChecked() {
         return isChecked;
     }
 
     private void draw(){
-
-        BackgroundProducer backgroundProducer = new FlatColorBackgroundProducer();
-        TextImgProducer textImgProducer = new DefaultTextImgProducer();
-
 
         View v = new CaptchaRenderer(imageView.getContext(), 200, 60, BackgroundType.FLAT, drawTextImageType(), code);
         Bitmap bitmap = Bitmap.createBitmap(200,60, Bitmap.Config.ARGB_8888);
